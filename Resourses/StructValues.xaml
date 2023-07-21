@@ -1,0 +1,26 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <sys:Double x:Key="GridBorder">20</sys:Double>
+    <sys:Double x:Key="GridBorderAddiction">30</sys:Double>
+    <CornerRadius x:Key="CloseButton">5, 20, 5, 5</CornerRadius>
+    <CornerRadius x:Key="JustButton">5, 5, 5, 5</CornerRadius>
+    
+    <CornerRadius x:Key="Triger">25, 15, 10, 10</CornerRadius>
+    <sys:Double x:Key="TrigerW">40</sys:Double>
+    <sys:Double x:Key="TrigerH">80</sys:Double>
+    
+    <CornerRadius x:Key="TrigerM">10, 10, 10, 10</CornerRadius>
+    <sys:Double x:Key="TrigerMW">40</sys:Double>
+    <sys:Double x:Key="TrigerMH">20</sys:Double>
+    
+    <CornerRadius x:Key="Arrow">10, 10, 20, 20</CornerRadius>
+    <sys:Double x:Key="ArrowW">40</sys:Double>
+    <sys:Double x:Key="ArrowH">45</sys:Double>
+    
+    <CornerRadius x:Key="Stick">60, 60, 60, 60</CornerRadius>
+    <sys:Double x:Key="StickW">120</sys:Double>
+
+    <CornerRadius x:Key="ButtonGP">20, 20, 20, 20</CornerRadius>
+    <sys:Double x:Key="ButtonW">40</sys:Double>
+</ResourceDictionary>
