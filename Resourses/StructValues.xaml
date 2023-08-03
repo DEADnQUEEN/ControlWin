@@ -1,9 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
     <sys:Double x:Key="GridBorder">20</sys:Double>
     <sys:Double x:Key="GridBorderAddiction">30</sys:Double>
-    <CornerRadius x:Key="CloseButton">5, 20, 5, 5</CornerRadius>
+
+    <CornerRadius x:Key="CloseButton">20, 5, 5, 5</CornerRadius>
     <CornerRadius x:Key="JustButton">5, 5, 5, 5</CornerRadius>
     
     <CornerRadius x:Key="Triger">25, 15, 10, 10</CornerRadius>
@@ -23,4 +25,8 @@
 
     <CornerRadius x:Key="ButtonGP">20, 20, 20, 20</CornerRadius>
     <sys:Double x:Key="ButtonW">40</sys:Double>
+
+    <CornerRadius x:Key="KeyButton">8, 8, 8, 8</CornerRadius>
+    <sys:Double x:Key="MargKey">3</sys:Double>
+    <sys:Double x:Key="KeyS">40</sys:Double>
 </ResourceDictionary>

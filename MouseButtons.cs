@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using WindowsInput;
+using static ControlWin.Mouse;
 
-namespace TEST1
+namespace ControlWin
 {
     public class Mouse
     {
@@ -18,8 +22,9 @@ namespace TEST1
             RightDown = 0x00000008,
             RightUp = 0x00000010
         }
-        private enum ScanCodeShort : short
+        public enum ScanCodeShort : short
         {
+            L = 42,
             KEY_0 = 0x30,
             KEY_1,
             KEY_2,
@@ -56,9 +61,9 @@ namespace TEST1
             KEY_X,
             KEY_Y,
             KEY_Z,
-            VK_LWIN, 
+            VK_LWIN,
             VK_RWIN,
-            VK_LSHIFT = 0xA0, 
+            VK_LSHIFT = 0xA0,
             VK_RSHIFT,
             VK_LCONTROL,
             VK_RCONTROL,
@@ -68,6 +73,24 @@ namespace TEST1
         public Buttons LeftButton = new(MouseEventFlags.LeftDown, MouseEventFlags.LeftUp);
         public Buttons RightButton = new(MouseEventFlags.RightDown, MouseEventFlags.RightUp);
         public Buttons MiddleButton = new(MouseEventFlags.MiddleDown, MouseEventFlags.MiddleUp);
+        private bool _shift = false;
+        public bool Shift
+        {
+            get => _shift;
+            set
+            {
+                _shift = value;
+            }
+        }
+        private bool _capslock = false;
+        public bool CapsLock
+        {
+            get => _capslock;
+            set
+            {
+                _capslock = value;
+            }
+        }
         public class Buttons
         {
             private readonly MouseEventFlags _dw;
@@ -107,9 +130,9 @@ namespace TEST1
                 return Cursorinfo.ptScreenPos;
             }
         }
-        public static IntPtr CursorState // text 65541
+        public static IntPtr CursorState // text is 65541
         {
-            get { return Cursorinfo.hCursor; }
+            get => Cursorinfo.hCursor;
         }
         [StructLayout(LayoutKind.Sequential)]
         struct CURSORINFO
@@ -122,13 +145,6 @@ namespace TEST1
             public IntPtr hCursor;          // Handle to the cursor. 
             public Point ptScreenPos;       // A POINT structure that receives the screen coordinates of the cursor. 
         }
-        private static void KeyPress(ScanCodeShort key)
-        {
-            const int KEYEVENTF_EXTENDEDKEY = 0x1;
-            const int KEYEVENTF_KEYUP = 0x2;
-            keybd_event((byte)key, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
-            keybd_event((byte)key, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-        }
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern bool GetCursorInfo(out CURSORINFO pci);
@@ -136,8 +152,23 @@ namespace TEST1
         [DllImport("user32.dll")]
         private static extern long SetCursorPos(int x, int y);
         [DllImport("user32.dll")]
-        private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+        private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo); 
         [DllImport("user32.dll")]
-        static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
+        public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+        async public void UpperStringEmulate(string key)
+        {
+            foreach(char c in key)
+            {
+                await Simulate.Events().Click(c).Invoke();
+            }
+        }
+        public void LowerStringEmulate(string input)
+        {
+            foreach(char c in input)
+            {
+                keybd_event((byte)Enum.Parse(typeof(ScanCodeShort), $"KEY_{c.ToString().ToUpper()}"), 0x45, 0, 0);
+            }
+        }
     }
 }

@@ -3,4 +3,12 @@
     <SolidColorBrush x:Key="Background" Color="#2F3339"/>
     <SolidColorBrush x:Key="MainColor" Color="#2998D4"/>
     <SolidColorBrush x:Key="PrimaryColor" Color="#CD2E6D"/>
+    <Label x:Key="Close" Content="❌"/>
+    <Label x:Key="State" Content="🌑"
+           Foreground="{StaticResource Background}"
+           Padding="0, 0, 0, 0"
+           FontSize="13"
+           HorizontalAlignment="Center"
+           VerticalAlignment="Center"/>
+    <Label x:Key="Minimize" Content="➖"/>
 </ResourceDictionary>

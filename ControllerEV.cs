@@ -4,7 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 
-namespace TEST1
+namespace ControlWin
 {
     public class Controller
     {

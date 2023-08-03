@@ -3,15 +3,18 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Threading;
 using System.Threading.Tasks;
+using ControlWin;
+using System.Windows.Data;
 
-namespace TEST1
+namespace ControlWin
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private enum StateUI : int
+        private readonly Window1 KeyboardWin;
+        public enum StateUI : int
         {
             Black,
             White, 
@@ -26,41 +29,32 @@ namespace TEST1
                 _ => throw new NotImplementedException(),
             };
         }
-        private StateUI BlackUI()
+        private static StateUI BlackUI()
         {
-            Min.Source = new BitmapImage(new Uri(@"/Icons/MinBlack.png", UriKind.Relative));
-            Cls.Source = new BitmapImage(new Uri(@"/Icons/CrosBlack.png", UriKind.Relative));
-            MoonIco.Source = new BitmapImage(new Uri(@"/Icons/moon.png", UriKind.Relative));
-
-
-            App.Current.Resources.MergedDictionaries[1].Source = new Uri("Resourses\\BlackColorsUI.xaml", UriKind.Relative);
+            Application.Current.Resources.MergedDictionaries[1].Source = new Uri("Resourses\\BlackColorsUI.xaml", UriKind.Relative);
 
             return StateUI.Black;
         }
-        private StateUI WhiteUI()
+        private static StateUI WhiteUI()
         {
-            Min.Source = new BitmapImage(new Uri(@"/Icons/Min.png", UriKind.Relative));
-            Cls.Source = new BitmapImage(new Uri(@"/Icons/Cros.png", UriKind.Relative));
-            MoonIco.Source = new BitmapImage(new Uri(@"/Icons/sun.png", UriKind.Relative));
-
-            App.Current.Resources.Clear();
-            App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri("Resourses\\StructValues.xaml", UriKind.Relative) });
-            App.Current.Resources.MergedDictionaries.Add(new ResourceDictionary() { Source = new Uri("Resourses\\WhiteColorsUI.xaml", UriKind.Relative) });
+            Application.Current.Resources.MergedDictionaries[1].Source = new Uri("Resourses\\WhiteColorsUI.xaml", UriKind.Relative);
 
             return StateUI.White;
         }
-        async private static void Work()
+        async private static void StartControllers()
         {
             await Task.Run(() => { _ = new Sharper(); });
         }
         public MainWindow()
         {
             InitializeComponent();
-            Work();
+            KeyboardWin = new Window1();
+            StartControllers();
         }
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
+            KeyboardWin.Close();
         }
         private void Minimise_Click(object sender, RoutedEventArgs e)
         {
@@ -72,7 +66,15 @@ namespace TEST1
         }
         private void StatBar_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            this.DragMove();
+            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            KeyboardWin.Visibility = Visibility.Visible;
         }
     }
 }

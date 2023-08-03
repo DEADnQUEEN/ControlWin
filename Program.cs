@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System;
-using System.Threading.Tasks;
-using System.Windows;
 
-namespace TEST1
+namespace ControlWin
 {
     internal class Sharper
     {
@@ -20,8 +18,8 @@ namespace TEST1
         private Thread? _mThread;
         private Thread MainThread
         {
-            get { return _mThread ?? throw new ArgumentNullException(); }
-            set { _mThread = value; }
+            get => _mThread ?? throw new ArgumentNullException();
+            set => _mThread = value;
         }
         private Thread? _pThread;
         private Thread PrimaryThread
@@ -50,9 +48,7 @@ namespace TEST1
         {
             while (Gamepads.Count <= 0)
             {
-                Console.WriteLine("Waiting for gamepad(-s)");
                 Thread.Sleep(1000);
-                Console.Clear();
             }
             foreach (var g in Gamepads)
             {
