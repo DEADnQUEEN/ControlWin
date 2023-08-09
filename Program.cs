@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System;
+using System.Windows.Threading;
 
 namespace ControlWin
 {
@@ -11,10 +12,12 @@ namespace ControlWin
         private readonly List<Joystick> joysticks = new();
         private readonly List<Guid> joyGuids = new();
         private IList<DeviceInstance> Gamepads { get { return d.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AllDevices); } }
-        private static int DegreeMax2 { get { return 16; } }
-        private static int CenterDegree { get { return DegreeMax2 - 1; } }
-        private static int Center { get { return (int)Math.Pow(2, CenterDegree); } }
-        private readonly Controller _c = new(Center);
+        private Controller? controll;
+        private Controller C
+        {
+            get => controll ?? throw new ArgumentNullException(nameof(controll));
+            set => controll = value;
+        }
         private Thread? _mThread;
         private Thread MainThread
         {
@@ -26,23 +29,6 @@ namespace ControlWin
         {
             get => _pThread ?? throw new ArgumentNullException();
             set => _pThread = value;
-        }
-        private bool _Polling = false;
-        public bool Polling
-        {
-            get
-            {
-                return _Polling;
-            }
-            set
-            {
-                _Polling = value;
-                if (value)
-                {
-                    CorrectPolling();
-                    return;
-                }
-            }
         }
         private void GuidFounder()
         {
@@ -60,57 +46,33 @@ namespace ControlWin
                 }
             }
         }
-        private void CorrectPolling()
+        public Sharper(MainWindow window)
         {
-            GuidFounder();
-
-            MainThread.Start();
-            PrimaryThread.Start();
-            MainThread.Join();
-            PrimaryThread.Join();
-        }
-        public Sharper()
-        {
+            C = new Controller(window);
             _mThread = new Thread(() =>
             {
-                while (Polling)
+                while (window.IsInitialized)
                 {
                     foreach (var g in Gamepads)
                     {
                         int id = joyGuids.IndexOf(g.InstanceGuid);
-                        if (id == -1) { GuidFounder(); }
+                        if (id == -1) { GuidFounder(); break; }
                         joysticks[id].Acquire();
                         joysticks[id].Poll();
                         foreach (var data in joysticks[id].GetBufferedData())
                         {
-                            switch (data.Offset)
-                            {
-                                case var value when value == _c.ButtonsOffsets.MoveX: // x
-                                    _c.TrigerVarX = data.Value;
-                                    break;
-                                case var value when value == _c.ButtonsOffsets.MoveY: // y
-                                    _c.TrigerVarY = data.Value;
-                                    break;
-                                case var value when value == _c.ButtonsOffsets.LeftButtonOffset: // L
-                                    _c.L1 = data.Value;
-                                    break;
-                                case var value when value == _c.ButtonsOffsets.RighttButtonOffset: // R
-                                    _c.R1 = data.Value;
-                                    break;
-                                default:
-                                    break;
-                            }
+                            C.SetValue(data.Offset, data.Value);
                         }
                     }
                 }
             });
             _pThread = new Thread(() =>
             {
-                while (Polling)
+                while (_mThread.IsAlive)
                 {
-                    if (_c.TrigerVarX != 0 || _c.TrigerVarY != 0)
+                    if (C.ValueOfOffset[(int)C.ButtonsOffsets.MoveX] != 0 || C.ValueOfOffset[(int)C.ButtonsOffsets.MoveY] != 0)
                     {
-                        Mouse.MoveTo(_c.TrigerVarX, _c.TrigerVarY);
+                        Mouse.MoveTo(C.ValueOfOffset[(int)C.ButtonsOffsets.MoveX], C.ValueOfOffset[(int)C.ButtonsOffsets.MoveY]);
                     }
                     Thread.Sleep(1000 / 144);
                 }
@@ -118,11 +80,12 @@ namespace ControlWin
             {
                 IsBackground = true
             };
-            Polling = true;
-        }
-        ~Sharper()
-        {
-            Polling = false;
+
+            MainThread.Start();
+            PrimaryThread.Start();
+
+            MainThread.Join();
+            PrimaryThread.Join();
         }
     }
 }

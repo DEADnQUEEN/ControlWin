@@ -3,6 +3,14 @@
     <SolidColorBrush x:Key="Background" Color="#F2F2F3"/>
     <SolidColorBrush x:Key="MainColor" Color="#2998D4"/>
     <SolidColorBrush x:Key="PrimaryColor" Color="#CD2E6D"/>
+    <LinearGradientBrush x:Key="LeftTriggerBrush">
+        <GradientStop Color="#CD2E6D" Offset="{DynamicResource LeftTriggerValue}"/>
+        <GradientStop Color="#2998D4" Offset="{DynamicResource LeftTriggerValue}"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="RightTriggerBrush">
+        <GradientStop Color="#CD2E6D" Offset="{DynamicResource RightTriggerValue}"/>
+        <GradientStop Color="#2998D4" Offset="{DynamicResource RightTriggerValue}"/>
+    </LinearGradientBrush>
     <Label x:Key="State" Content="🔆"
            Foreground="{StaticResource Background}"
            Padding="0"

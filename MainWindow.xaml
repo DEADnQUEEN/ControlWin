@@ -12,7 +12,7 @@
         x:Name="w"
         ResizeMode="NoResize"
         Width="560"
-        Height="300"
+        Height="300" Initialized="w_Initialized"
         >
     <Window.Resources>
         <Style x:Key="FocusVisual1">
@@ -214,7 +214,7 @@
                         Width="{StaticResource TrigerW}"
                         Height="{StaticResource TrigerH}"
                         CornerRadius="{StaticResource Triger}"
-                        Background="{StaticResource MainColor}"
+                        Background="{DynamicResource RightTriggerBrush}"
                         HorizontalAlignment="Left" 
                         VerticalAlignment="Top"
                         RenderTransformOrigin="0.5, 0.5">
@@ -334,7 +334,7 @@
                         Width="{StaticResource TrigerW}"
                         Height="{StaticResource TrigerH}"
                         CornerRadius="{StaticResource Triger}"
-                        Background="{StaticResource MainColor}"
+                        Background="{DynamicResource RightTriggerBrush}"
                         HorizontalAlignment="Right" 
                         VerticalAlignment="Top"
                         RenderTransformOrigin="0.5, 0.5">

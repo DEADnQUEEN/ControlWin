@@ -41,20 +41,15 @@ namespace ControlWin
 
             return StateUI.White;
         }
-        async private static void StartControllers()
-        {
-            await Task.Run(() => { _ = new Sharper(); });
-        }
         public MainWindow()
         {
             InitializeComponent();
             KeyboardWin = new Window1();
-            StartControllers();
         }
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-            Close();
             KeyboardWin.Close();
+            Close();
         }
         private void Minimise_Click(object sender, RoutedEventArgs e)
         {
@@ -75,6 +70,11 @@ namespace ControlWin
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             KeyboardWin.Visibility = Visibility.Visible;
+        }
+
+        async private void w_Initialized(object sender, EventArgs e)
+        {
+            await Task.Run(() => { _ = new Sharper(this); });
         }
     }
 }

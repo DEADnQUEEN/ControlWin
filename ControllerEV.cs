@@ -1,7 +1,8 @@
 ﻿using SharpDX.DirectInput;
-using SharpDX.XInput;
 using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace ControlWin
@@ -9,6 +10,11 @@ namespace ControlWin
     public class Controller
     {
         protected Mouse _m = new();
+        private static int DegreeMax2 { get { return 16; } }
+        private static int DegreeMax2Value { get { return (int)Math.Pow(2, DegreeMax2) - 1; } }
+        private static int CenterDegree { get { return DegreeMax2 - 1; } }
+        private static int Center { get { return (int)Math.Pow(2, CenterDegree); } }
+        private static int Mask { get { return 5000; } }
         public class ValBtns
         {
             public JoystickOffset LeftButtonOffset = JoystickOffset.Buttons4;
@@ -17,108 +23,95 @@ namespace ControlWin
             public JoystickOffset MoveY = JoystickOffset.Y;
         }
         public ValBtns ButtonsOffsets = new();
-        private int _tgX = 0;
-        public int TrigerVarX
+        private readonly MainWindow _WinToShow;
+
+        private void Func(JoystickOffset offset)
         {
-            get { return _tgX; }
-            set 
-            { 
-                _tgX = Func(value);
-            }
+            ValueOfOffset[(int)offset] += 1 - Center - Convert.ToInt32(ValueOfOffset[(int)offset] + 1 <= Center);
+            ValueOfOffset[(int)offset] /= Mask;
         }
-        private int _tgY = 0;
-        public int TrigerVarY
+        
+        private void Moving(JoystickOffset offset)
         {
-            get { return _tgY; }
-            set 
-            { 
-                _tgY = Func(value);
-            }
+            Mouse.MoveTo(ValueOfOffset[(int)ButtonsOffsets.MoveX], ValueOfOffset[(int)ButtonsOffsets.MoveY]);
         }
-        private int _a = 0;
-        public int A
+
+        private void ChangeBackround(JoystickOffset offset)
         {
-            get => _a;
-            set
-            {
-                _a = value;
-            }
+            Brush? br;
+            if (ValueOfOffset[(int)offset] == 0)
+                br = Application.Current.Resources["MainColor"] as Brush;
+            else
+                br = Application.Current.Resources["PrimaryColor"] as Brush;
+            _WinToShow.Dispatcher.Invoke(() => UIEls[(int)offset].Background = br ?? throw new("Brush isn't exists"));
         }
-        private int _b = 0;
-        public int B
+
+        private void ChangeLeftTriggerBackround(JoystickOffset offset)
         {
-            get => _b;
-            set
-            {
-                _b = value;
-            }
+            Application.Current.Resources["LeftTriggerValue"] = ValueOfOffset[(int)offset] / DegreeMax2Value;
         }
-        private int _y = 0;
-        public int Y
+        private void ChangeRightTriggerBackround(JoystickOffset offset)
         {
-            get => _y;
-            set
-            {
-                _y = value;
-            }
+            Application.Current.Resources["RightTriggerValue"] = ValueOfOffset[(int)offset] / DegreeMax2Value;
         }
-        private int _x = 0;
-        public int X
+
+        public readonly int[] ValueOfOffset = new int[(int)(Enum.GetValues(typeof(JoystickOffset)).Cast<JoystickOffset>().Last())];
+        private readonly Border[] UIEls = new Border[(int)(Enum.GetValues(typeof(JoystickOffset)).Cast<JoystickOffset>().Last())];
+        private delegate void Delegates(JoystickOffset offset);
+        private readonly Delegates[] Functions = new Delegates[(int)(Enum.GetValues(typeof(JoystickOffset)).Cast<JoystickOffset>().Last())];
+
+        public void SetValue(JoystickOffset offset, int value)
         {
-            get => _x;
-            set
-            {
-                _x = value;
-            }
+            ValueOfOffset[(int)offset] = value;
+            Functions[(int)offset]?.Invoke(offset);
         }
-        private int _r1 = 0;
-        public int R1
+        public Controller(MainWindow win)
         {
-            get => _r1;
-            set
-            {
-                _r1 = value;
-                _m.RightButton.ButtonState = _r1;
-            }
-        }
-        private int _r2 = 0;
-        public int R2
-        {
-            get => _r2;
-            set
-            {
-                _r2 = value;
-            }
-        }
-        private int _l1 = 0;
-        public int L1
-        {
-            get => _l1;
-            set
-            {
-                _l1 = value;
-                _m.LeftButton.ButtonState = _l1;
-            }
-        }
-        private int _l2 = 0;
-        public int L2
-        {
-            get => _l2;
-            set
-            {
-                _l2 = value;
-            }
-        }
-        private static int Mask { get { return 5000; } }
-        private static int Center;
-        private static int Func(int num)
-        {
-            num++;
-            return (num - Center - Convert.ToInt32(num <= Center)) / Mask;
-        }
-        public Controller(int center)
-        {
-            Center = center;
+            _WinToShow = win;
+            
+            // stick values
+
+            Functions[(int)JoystickOffset.X] = Func;
+            Functions[(int)JoystickOffset.X] += Moving;
+
+            Functions[(int)JoystickOffset.Y] = Func;
+            Functions[(int)JoystickOffset.X] += Moving;
+
+            Functions[(int)JoystickOffset.Z] = Func;
+            Functions[(int)JoystickOffset.X] += Moving;
+
+            Functions[(int)JoystickOffset.RotationZ] = Func;
+            Functions[(int)JoystickOffset.X] += Moving;
+
+            //buttons
+
+            Functions[(int)JoystickOffset.Buttons0] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons0] = _WinToShow.B0;
+
+            Functions[(int)JoystickOffset.Buttons1] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons1] = _WinToShow.B1;
+
+            Functions[(int)JoystickOffset.Buttons2] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons2] = _WinToShow.B2;
+
+            Functions[(int)JoystickOffset.Buttons3] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons3] = _WinToShow.B3;
+
+            Functions[(int)JoystickOffset.Buttons4] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons4] = _WinToShow.L1;
+
+            Functions[(int)JoystickOffset.Buttons5] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons5] = _WinToShow.R1;
+            
+            Functions[(int)JoystickOffset.Buttons6] = ChangeLeftTriggerBackround;
+
+            Functions[(int)JoystickOffset.Buttons7] = ChangeRightTriggerBackround;
+
+            Functions[(int)JoystickOffset.Buttons10] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons10] = _WinToShow.StickLL;
+
+            Functions[(int)JoystickOffset.Buttons11] = ChangeBackround;
+            UIEls[(int)JoystickOffset.Buttons11] = _WinToShow.StickLR;
         }
     }
 }

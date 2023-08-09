@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using WindowsInput;
-using static ControlWin.Mouse;
 
 namespace ControlWin
 {
@@ -24,7 +22,10 @@ namespace ControlWin
         }
         public enum ScanCodeShort : short
         {
-            L = 42,
+            VK_LEFT = 0x25,
+            VK_UP,
+            VK_RIGHT,
+            VK_DOWN,
             KEY_0 = 0x30,
             KEY_1,
             KEY_2,
@@ -156,17 +157,18 @@ namespace ControlWin
         [DllImport("user32.dll")]
         public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
 
-        async public void UpperStringEmulate(string key)
+        async public static void UpperStringEmulate(string key)
         {
             foreach(char c in key)
             {
                 await Simulate.Events().Click(c).Invoke();
             }
         }
-        public void LowerStringEmulate(string input)
+        async public static void LowerStringEmulate(string input)
         {
             foreach(char c in input)
             {
+                await Task.Delay(10);
                 keybd_event((byte)Enum.Parse(typeof(ScanCodeShort), $"KEY_{c.ToString().ToUpper()}"), 0x45, 0, 0);
             }
         }

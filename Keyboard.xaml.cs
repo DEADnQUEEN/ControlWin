@@ -44,12 +44,12 @@ namespace ControlWin
 
             if (_m.Shift)
             {
-                _m.LowerStringEmulate(v);
+                Mouse.LowerStringEmulate(v);
                 Shift_Button_Click(sender, e);
             }
             else
             {
-                _m.UpperStringEmulate(v);
+                Mouse.UpperStringEmulate(v);
             }
         }
 

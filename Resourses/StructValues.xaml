@@ -11,6 +11,8 @@
     <CornerRadius x:Key="Triger">25, 15, 10, 10</CornerRadius>
     <sys:Double x:Key="TrigerW">40</sys:Double>
     <sys:Double x:Key="TrigerH">80</sys:Double>
+    <sys:Double x:Key="LeftTriggerValue">0</sys:Double>
+    <sys:Double x:Key="RightTriggerValue">0</sys:Double>
     
     <CornerRadius x:Key="TrigerM">10, 10, 10, 10</CornerRadius>
     <sys:Double x:Key="TrigerMW">40</sys:Double>
